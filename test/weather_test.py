@@ -1,5 +1,4 @@
 import allure
-
 from unittest import TestCase
 from library.httpclient import HttpClient
 
