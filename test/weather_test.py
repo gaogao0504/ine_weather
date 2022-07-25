@@ -1,40 +1,23 @@
-import allure
-from unittest import TestCase
+import pytest
+
 from library.httpclient import HttpClient
 
 
-@allure.feature('Test Weather api')
-class Weather(TestCase):
+class TestWeather:
     """Weather api test cases"""
 
-    def setUp(self):
-        """Setup of the test"""
-
+    def setup(self):
+        """
+        测试初始化操作
+        """
         self.host = 'http://www.weather.com.cn'
-        self.ep_path = '/data/cityinfo'
+        self.api = '/data/cityinfo'
         self.client = HttpClient()
 
-    @allure.story('Test of ShenZhen')
-    def test_1(self):
-        city_code = '101280601'
-        exp_city = '深圳'
-        self._test(city_code, exp_city)
-
-    @allure.story('Test of BeiJing')
-    def test_2(self):
-        city_code = '101010100'
-        exp_city = '北京'
-        self._test(city_code, exp_city)
-
-    @allure.story('Test of ShangHai')
-    def test_3(self):
-        city_code = '101020100'
-        exp_city = '上海'
-        self._test(city_code, exp_city)
-
-    def _test(self, city_code, exp_city):
-        url = f'{self.host}{self.ep_path}/{city_code}.html'
+    @pytest.mark.parametrize('city_code, exp_city', [("101280601", "深圳"), ("101010100", "北京"), ("101020100", "上海")])
+    def test_weather(self, city_code, exp_city):
+        url = f'{self.host}{self.api}/{city_code}.html'
         response = self.client.Get(url=url)
         act_city = response.json()['weatherinfo']['city']
         print(f'Expect city = {exp_city}, while actual city = {act_city}')
-        self.assertEqual(exp_city, act_city, f'Expect city = {exp_city}, while actual city = {act_city}')
+        assert exp_city == act_city
